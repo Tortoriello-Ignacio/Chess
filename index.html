@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Dark Chess | Web Game</title>
+<link rel="icon" type="image/png" href="assets/Chess.jpg" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chess.js from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "chess.js": "https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <main class="app-shell">
+    <section class="game-layout">
+
+      <aside class="game-panel">
+        <div class="brand">
+          <span class="eyebrow">Interactive Web Chess</span>
+          <h1>Dark Chess</h1>
+          <p>
+            A minimal and formal chess interface powered by Chess.js.
+          </p>
+        </div>
+
+        <div class="status-card">
+          <div class="status-row">
+            <span>Current Turn</span>
+            <strong id="turnText">White</strong>
+          </div>
+
+          <div class="status-row">
+            <span>Game Status</span>
+            <strong id="statusText">Ready</strong>
+          </div>
+
+          <div class="status-row">
+            <span>Selected Square</span>
+            <strong id="selectedText">None</strong>
+          </div>
+        </div>
+
+        <button id="resetButton" class="reset-button" type="button">
+          Restart Game
+        </button>
+
+        <div class="game-note">
+          <p>
+            Click a piece to select it, then click a legal destination square.
+          </p>
+        </div>
+      </aside>
+
+      <section class="board-section" aria-label="Chess board area">
+        <div id="chessBoard" class="chess-board" aria-label="Chess board"></div>
+      </section>
+
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
