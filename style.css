@@ -17,9 +17,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: #f3f4f6;
   background:
-    radial-gradient(circle at 12% 18%, rgba(96, 165, 250, 0.14), transparent 28%),
-    radial-gradient(circle at 88% 12%, rgba(148, 163, 184, 0.11), transparent 28%),
-    linear-gradient(135deg, #06080d 0%, #0b0f14 45%, #151b24 100%);
+    radial-gradient(circle at 12% 18%, rgba(96, 165, 250, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(214, 182, 107, 0.16), transparent 32%),
+    linear-gradient(135deg, #06080d 0%, #0b0f14 42%, #151b24 100%);
   overflow-x: hidden;
 }
 
@@ -29,12 +29,12 @@ body::before {
   inset: 0;
   z-index: -2;
   background-image:
-    linear-gradient(rgba(5, 8, 13, 0.72), rgba(5, 8, 13, 0.9)),
+    linear-gradient(rgba(5, 8, 13, 0.45), rgba(5, 8, 13, 0.68)),
     url("https://img.magnific.com/foto-gratis/piezas-ajedrez-abstractas-estilo-arte-digital_23-2151476081.jpg?semt=ais_hybrid&w=740&q=80");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  filter: brightness(0.52) saturate(0.75) contrast(1.1);
+  filter: brightness(0.78) saturate(0.95) contrast(1.12);
 }
 
 body::after {
@@ -44,8 +44,9 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.06), transparent 30%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.44));
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.05), transparent 30%),
+    radial-gradient(circle at 20% 80%, rgba(214, 182, 107, 0.10), transparent 28%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.34));
 }
 
 /* =========================
@@ -58,7 +59,7 @@ body::after {
   z-index: 1000;
   min-height: 84px;
   padding: 14px 30px;
-  background: rgba(8, 11, 17, 0.84);
+  background: rgba(8, 11, 17, 0.82);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.46);
   backdrop-filter: blur(18px);
@@ -176,7 +177,7 @@ body::after {
   grid-template-columns: 1fr 0.75fr;
   gap: 28px;
   align-items: end;
-  background: linear-gradient(145deg, rgba(21, 27, 36, 0.78), rgba(8, 11, 17, 0.66));
+  background: linear-gradient(145deg, rgba(21, 27, 36, 0.76), rgba(8, 11, 17, 0.62));
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 28px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
@@ -215,8 +216,8 @@ body::after {
 .challenge-card {
   background: linear-gradient(
     145deg,
-    rgba(22, 27, 34, 0.88),
-    rgba(10, 14, 20, 0.78)
+    rgba(22, 27, 34, 0.86),
+    rgba(10, 14, 20, 0.74)
   );
   border: 1px solid rgba(255, 255, 255, 0.115);
   border-radius: 24px;
@@ -330,7 +331,13 @@ body::after {
 .board-area {
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 14px;
+  perspective: 1300px;
+}
+
+.board-perspective {
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease-out;
 }
 
 .chess-board {
@@ -339,14 +346,15 @@ body::after {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  border: 10px solid rgba(17, 24, 39, 0.96);
-  border-radius: 26px;
+  border: 12px solid rgba(18, 24, 34, 0.98);
+  border-radius: 30px;
   overflow: hidden;
   background: #111827;
+  transform-style: preserve-3d;
   box-shadow:
-    0 34px 80px rgba(0, 0, 0, 0.58),
-    0 0 0 1px rgba(214, 182, 107, 0.22),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    0 46px 100px rgba(0, 0, 0, 0.68),
+    0 0 0 1px rgba(214, 182, 107, 0.26),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
 
 .square {
@@ -364,14 +372,14 @@ body::after {
 
 .square.light {
   background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.18), transparent 34%),
-    linear-gradient(145deg, #b9a984, #8d7b59);
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.20), transparent 34%),
+    linear-gradient(145deg, #c3b68d, #8e7a56);
 }
 
 .square.dark {
   background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.08), transparent 34%),
-    linear-gradient(145deg, #3a3027, #1c1815);
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.09), transparent 34%),
+    linear-gradient(145deg, #3d3228, #181411);
 }
 
 .square:hover {
@@ -430,15 +438,32 @@ body::after {
 .piece {
   position: relative;
   z-index: 2;
-  font-size: clamp(2.2rem, 7vw, 4.9rem);
-  line-height: 1;
-  transform: translateY(-3px);
+  width: 82%;
+  height: 82%;
+  display: grid;
+  place-items: center;
+  transform: translateY(-5px) translateZ(26px);
+  transform-style: preserve-3d;
   filter:
-    drop-shadow(0 12px 8px rgba(0, 0, 0, 0.48))
-    drop-shadow(0 22px 20px rgba(0, 0, 0, 0.22));
+    drop-shadow(0 12px 10px rgba(0, 0, 0, 0.52))
+    drop-shadow(0 24px 20px rgba(0, 0, 0, 0.28));
 }
 
-.piece.white {
+.piece-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transform: translateZ(20px);
+}
+
+.piece-fallback {
+  font-size: clamp(2.3rem, 7vw, 5rem);
+  line-height: 1;
+  display: none;
+}
+
+.piece.white .piece-fallback {
   color: #f8fafc;
   text-shadow:
     0 1px 0 #ffffff,
@@ -449,7 +474,7 @@ body::after {
     0 14px 22px rgba(0, 0, 0, 0.38);
 }
 
-.piece.black {
+.piece.black .piece-fallback {
   color: #0a0d12;
   text-shadow:
     0 1px 0 #5f6b7a,
@@ -470,7 +495,8 @@ body::after {
 }
 
 .floating-piece .piece {
-  font-size: inherit;
+  width: 100%;
+  height: 100%;
 }
 
 .square-coordinate {

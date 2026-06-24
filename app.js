@@ -1,7 +1,9 @@
 import { Chess } from "chess.js";
 
 const STOCKFISH_CDN = "https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js";
+const PIECE_BASE_URL = "https://images.chesscomfiles.com/chess-themes/pieces/neo/150";
 
+const boardPerspective = document.getElementById("boardPerspective");
 const boardElement = document.getElementById("chessBoard");
 
 const humanModeBtn = document.getElementById("humanModeBtn");
@@ -82,49 +84,49 @@ const stats = loadStats();
 
 const challenges = [
   {
-    id: "scholars-mate",
-    title: "Scholar's Mate",
-    type: "Mate in 4",
-    side: "White",
-    fen: "start",
-    description: "A fast queen and bishop battery against the black king.",
-    solution: ["e2e4", "e7e5", "f1c4", "b8c6", "d1h5", "g8f6", "h5f7"],
-  },
-  {
-    id: "legals-mate",
+    id: "legal-pattern",
     title: "Légal Pattern",
     type: "Mate in 3",
     side: "White",
     fen: "rnbqk1nr/ppp2ppp/3p4/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5",
-    description: "A classical queen sacrifice leading to a knight mate.",
+    description: "A classical queen sacrifice pattern finishing with a knight mate.",
     solution: ["f3e5", "g4d1", "c4f7", "e8e7", "c3d5"],
   },
   {
-    id: "extended-fools",
-    title: "Extended Fool's Net",
-    type: "Mate in 3",
-    side: "Black",
-    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1",
-    description: "A dark-square queen strike after severe kingside weaknesses.",
-    solution: ["f7f5", "f2f3", "e7e6", "g2g4", "d8h4"],
-  },
-  {
-    id: "queen-bishop-battery",
-    title: "Queen Bishop Battery",
+    id: "blackburne-trap",
+    title: "Blackburne Trap",
     type: "Mate in 4",
-    side: "White",
-    fen: "start",
-    description: "A reversed move-order queen and bishop attack on f7.",
-    solution: ["e2e4", "e7e5", "d1h5", "b8c6", "f1c4", "g8f6", "h5f7"],
+    side: "Black",
+    fen: "r1bqkb1r/pppp1ppp/2n5/4N3/2BnP3/8/PPPP1PPP/RNBQK2R b KQkq - 0 4",
+    description: "A sharp opening trap ending with a devastating knight mate.",
+    solution: ["d8g5", "e5f7", "g5g2", "h1f1", "g2e4", "c4e2", "d4f3"],
   },
   {
-    id: "mirror-fools",
-    title: "Mirror Fool's Net",
-    type: "Mate in 3",
+    id: "fools-mate",
+    title: "Fool's Mate Finish",
+    type: "Mate Finish",
     side: "Black",
-    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1",
-    description: "A compact forcing sequence against exposed light squares.",
-    solution: ["e7e5", "g2g4", "d8h4", "f2f3", "h4e1"],
+    fen: "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2",
+    description: "The fastest known mating pattern after severe kingside weakening.",
+    solution: ["d8h4"],
+  },
+  {
+    id: "scholar-finish",
+    title: "Scholar Battery",
+    type: "Mate Finish",
+    side: "White",
+    fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+    description: "A queen and bishop battery targeting the vulnerable f7 square.",
+    solution: ["h5f7"],
+  },
+  {
+    id: "back-rank-finish",
+    title: "Back Rank Execution",
+    type: "Mate Finish",
+    side: "White",
+    fen: "6k1/5ppp/8/8/8/8/5PPP/4R1K1 w - - 0 1",
+    description: "A clean back-rank mating motif with the rook controlling the file.",
+    solution: ["e1e8"],
   },
 ];
 
@@ -133,6 +135,7 @@ renderChallenges();
 renderBoard();
 updateStats();
 configureEngine();
+bindBoardTilt();
 
 /* =========================
    Board Rendering
@@ -229,9 +232,50 @@ function getCoordinateLabel(file, rank) {
 function createPieceElement(color, type) {
   const pieceElement = document.createElement("span");
   pieceElement.className = `piece ${color === "w" ? "white" : "black"}`;
-  pieceElement.textContent = pieceSymbols[`${color}${type}`];
+
+  const image = document.createElement("img");
+  image.className = "piece-img";
+  image.src = `${PIECE_BASE_URL}/${color}${type}.png`;
+  image.alt = `${color === "w" ? "White" : "Black"} ${type}`;
+
+  const fallback = document.createElement("span");
+  fallback.className = "piece-fallback";
+  fallback.textContent = pieceSymbols[`${color}${type}`];
+
+  image.addEventListener("error", () => {
+    image.style.display = "none";
+    fallback.style.display = "block";
+  });
+
+  pieceElement.appendChild(image);
+  pieceElement.appendChild(fallback);
 
   return pieceElement;
+}
+
+/* =========================
+   3D Board Tilt
+========================= */
+
+function bindBoardTilt() {
+  if (!boardPerspective) return;
+
+  boardPerspective.addEventListener("mousemove", (event) => {
+    const rect = boardPerspective.getBoundingClientRect();
+
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    const rotateY = x * 10;
+    const rotateX = -y * 10;
+
+    boardPerspective.style.transform =
+      `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
+  });
+
+  boardPerspective.addEventListener("mouseleave", () => {
+    boardPerspective.style.transform = "rotateX(0deg) rotateY(0deg)";
+  });
 }
 
 /* =========================
@@ -348,7 +392,6 @@ async function animateMove(move) {
   floatingPiece.style.top = `${fromRect.top}px`;
   floatingPiece.style.width = `${fromRect.width}px`;
   floatingPiece.style.height = `${fromRect.height}px`;
-  floatingPiece.style.fontSize = `${Math.min(fromRect.width * 0.76, 82)}px`;
 
   floatingPiece.appendChild(createPieceElement(color, type));
 
@@ -361,15 +404,15 @@ async function animateMove(move) {
     await floatingPiece.animate(
       [
         { transform: "translate(0, 0) scale(1)" },
-        { transform: `translate(${dx}px, ${dy}px) scale(1.04)` },
+        { transform: `translate(${dx}px, ${dy}px) scale(1.05)` },
       ],
       {
-        duration: 240,
+        duration: 260,
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
       }
     ).finished;
   } else {
-    await sleep(240);
+    await sleep(260);
   }
 
   floatingPiece.remove();
@@ -699,11 +742,7 @@ function loadChallenge(challengeId) {
   boardOrientation = challenge.side === "White" ? "w" : "b";
   setModeButtons();
 
-  if (challenge.fen === "start") {
-    game.reset();
-  } else {
-    game.load(challenge.fen);
-  }
+  game.load(challenge.fen);
 
   sharePanel.classList.add("hidden");
   hideModal();
