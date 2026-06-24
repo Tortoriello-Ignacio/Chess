@@ -17,10 +17,35 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: #f3f4f6;
   background:
-    radial-gradient(circle at 12% 18%, rgba(96, 165, 250, 0.13), transparent 28%),
+    radial-gradient(circle at 12% 18%, rgba(96, 165, 250, 0.14), transparent 28%),
     radial-gradient(circle at 88% 12%, rgba(148, 163, 184, 0.11), transparent 28%),
-    radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.06), transparent 32%),
-    linear-gradient(135deg, #070a0f 0%, #0b0f14 42%, #141a24 100%);
+    linear-gradient(135deg, #06080d 0%, #0b0f14 45%, #151b24 100%);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(5, 8, 13, 0.72), rgba(5, 8, 13, 0.9)),
+    url("https://img.magnific.com/foto-gratis/piezas-ajedrez-abstractas-estilo-arte-digital_23-2151476081.jpg?semt=ais_hybrid&w=740&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: brightness(0.52) saturate(0.75) contrast(1.1);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.06), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.44));
 }
 
 /* =========================
@@ -31,12 +56,12 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  min-height: 82px;
+  min-height: 84px;
   padding: 14px 30px;
-  background: rgba(7, 10, 15, 0.88);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(16px);
+  background: rgba(8, 11, 17, 0.84);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,18 +74,19 @@ body {
 
 .eyebrow {
   display: block;
-  color: #93c5fd;
+  color: #d6b66b;
   font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .brand-block h1 {
-  font-size: 1.15rem;
-  letter-spacing: 0.05em;
+  font-size: 1.18rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #f8fafc;
 }
 
 .dashboard-actions {
@@ -74,7 +100,7 @@ body {
 .dashboard-btn,
 .select-control select {
   min-height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(214, 182, 107, 0.28);
   background: rgba(255, 255, 255, 0.055);
   color: #f3f4f6;
   padding: 9px 13px;
@@ -83,20 +109,21 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.22s ease;
+  border-radius: 12px;
 }
 
 .dashboard-btn:hover,
 .dashboard-btn.active {
-  background: rgba(255, 255, 255, 0.13);
-  border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+  background: rgba(214, 182, 107, 0.14);
+  border-color: rgba(214, 182, 107, 0.46);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.36);
 }
 
 .dashboard-btn.reset {
-  background: #f3f4f6;
+  background: linear-gradient(135deg, #f4d58d, #c79a3b);
   color: #111827;
-  border-color: #f3f4f6;
+  border-color: rgba(244, 213, 141, 0.9);
 }
 
 .select-control,
@@ -120,7 +147,7 @@ body {
 }
 
 .elo-control {
-  min-width: 210px;
+  min-width: 220px;
 }
 
 .elo-control span {
@@ -129,7 +156,7 @@ body {
 
 .elo-control input {
   width: 100%;
-  accent-color: #93c5fd;
+  accent-color: #d6b66b;
 }
 
 /* =========================
@@ -137,17 +164,45 @@ body {
 ========================= */
 
 .page-shell {
-  width: min(1400px, 100%);
+  width: min(1440px, 100%);
   margin: 0 auto;
+  padding: 34px;
+}
+
+.hero-intro {
+  margin-bottom: 30px;
   padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 0.75fr;
+  gap: 28px;
+  align-items: end;
+  background: linear-gradient(145deg, rgba(21, 27, 36, 0.78), rgba(8, 11, 17, 0.66));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(16px);
+}
+
+.hero-intro h2 {
+  max-width: 820px;
+  font-size: clamp(2.1rem, 4vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.hero-intro p {
+  color: #d1d5db;
+  line-height: 1.65;
+  font-size: 1rem;
 }
 
 .game-section {
   display: grid;
-  grid-template-columns: 340px minmax(320px, 1fr);
+  grid-template-columns: 350px minmax(320px, 1fr);
   gap: 32px;
   align-items: start;
-  margin-bottom: 44px;
+  margin-bottom: 46px;
 }
 
 .game-panel {
@@ -160,21 +215,22 @@ body {
 .challenge-card {
   background: linear-gradient(
     145deg,
-    rgba(22, 27, 34, 0.92),
-    rgba(13, 17, 23, 0.88)
+    rgba(22, 27, 34, 0.88),
+    rgba(10, 14, 20, 0.78)
   );
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.115);
+  border-radius: 24px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(16px);
 }
 
 .panel-card {
-  padding: 22px;
+  padding: 24px;
 }
 
 .panel-label {
   display: block;
-  color: #93c5fd;
+  color: #d6b66b;
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.14em;
@@ -187,7 +243,7 @@ body {
   justify-content: space-between;
   gap: 14px;
   padding: 13px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.085);
 }
 
 .status-row:last-child {
@@ -217,6 +273,7 @@ body {
   text-align: center;
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 }
 
 .stats-grid strong {
@@ -246,23 +303,24 @@ body {
 .share-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 11px;
 }
 
 .share-grid button {
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(214, 182, 107, 0.26);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
   color: #f3f4f6;
-  padding: 10px;
+  padding: 11px;
   cursor: pointer;
   font-weight: 900;
   text-transform: uppercase;
   font-size: 0.72rem;
-  transition: 0.2s ease;
+  transition: 0.22s ease;
 }
 
 .share-grid button:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(214, 182, 107, 0.14);
 }
 
 /* =========================
@@ -272,6 +330,7 @@ body {
 .board-area {
   display: grid;
   place-items: center;
+  padding: 12px;
 }
 
 .chess-board {
@@ -280,11 +339,14 @@ body {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 10px solid rgba(17, 24, 39, 0.96);
+  border-radius: 26px;
+  overflow: hidden;
   background: #111827;
   box-shadow:
-    0 32px 70px rgba(0, 0, 0, 0.48),
-    0 0 0 9px rgba(255, 255, 255, 0.025);
+    0 34px 80px rgba(0, 0, 0, 0.58),
+    0 0 0 1px rgba(214, 182, 107, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.09);
 }
 
 .square {
@@ -295,33 +357,35 @@ body {
   cursor: pointer;
   user-select: none;
   transition:
-    background 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease;
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .square.light {
   background:
-    linear-gradient(145deg, #b8bec8, #9ca3af);
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(145deg, #b9a984, #8d7b59);
 }
 
 .square.dark {
   background:
-    linear-gradient(145deg, #374151, #1f2937);
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(145deg, #3a3027, #1c1815);
 }
 
 .square:hover {
-  box-shadow: inset 0 0 0 3px rgba(147, 197, 253, 0.35);
+  box-shadow: inset 0 0 0 4px rgba(244, 213, 141, 0.38);
 }
 
 .square.selected {
   box-shadow:
-    inset 0 0 0 4px rgba(96, 165, 250, 0.82),
-    inset 0 0 28px rgba(96, 165, 250, 0.24);
+    inset 0 0 0 5px rgba(244, 213, 141, 0.82),
+    inset 0 0 34px rgba(244, 213, 141, 0.24);
 }
 
 .square.legal {
-  box-shadow: inset 0 0 0 3px rgba(52, 211, 153, 0.56);
+  box-shadow: inset 0 0 0 4px rgba(74, 222, 128, 0.56);
 }
 
 .square.legal::after {
@@ -329,7 +393,7 @@ body {
   width: 22%;
   height: 22%;
   border-radius: 50%;
-  background: rgba(52, 211, 153, 0.68);
+  background: rgba(74, 222, 128, 0.72);
   position: absolute;
 }
 
@@ -337,19 +401,20 @@ body {
   width: 76%;
   height: 76%;
   background: transparent;
-  border: 4px solid rgba(248, 113, 113, 0.7);
+  border: 4px solid rgba(248, 113, 113, 0.74);
 }
 
 .square.last-move {
-  box-shadow: inset 0 0 0 4px rgba(250, 204, 21, 0.36);
+  box-shadow: inset 0 0 0 5px rgba(59, 130, 246, 0.38);
 }
 
 .square.check {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.7), rgba(127, 29, 29, 0.92));
+  background:
+    radial-gradient(circle, rgba(248, 113, 113, 0.8), rgba(127, 29, 29, 0.94));
 }
 
 .square.wrong {
-  box-shadow: inset 0 0 0 5px rgba(239, 68, 68, 0.8);
+  box-shadow: inset 0 0 0 6px rgba(239, 68, 68, 0.88);
 }
 
 .square.wrong::before {
@@ -359,44 +424,61 @@ body {
   color: #fee2e2;
   font-size: clamp(2.4rem, 6vw, 4.8rem);
   font-weight: 900;
-  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.65);
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.68);
 }
 
 .piece {
   position: relative;
   z-index: 2;
-  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  font-size: clamp(2.2rem, 7vw, 4.9rem);
   line-height: 1;
-  transform: translateY(-2px);
-  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.45));
+  transform: translateY(-3px);
+  filter:
+    drop-shadow(0 12px 8px rgba(0, 0, 0, 0.48))
+    drop-shadow(0 22px 20px rgba(0, 0, 0, 0.22));
 }
 
 .piece.white {
   color: #f8fafc;
   text-shadow:
     0 1px 0 #ffffff,
-    0 2px 0 #d1d5db,
-    0 3px 0 #9ca3af,
-    0 5px 8px rgba(0, 0, 0, 0.55),
-    0 12px 18px rgba(0, 0, 0, 0.35);
+    0 2px 0 #d9dde4,
+    0 3px 0 #b6becb,
+    0 4px 0 #8e99aa,
+    0 6px 10px rgba(0, 0, 0, 0.58),
+    0 14px 22px rgba(0, 0, 0, 0.38);
 }
 
 .piece.black {
-  color: #111827;
+  color: #0a0d12;
   text-shadow:
-    0 1px 0 #64748b,
-    0 2px 0 #475569,
-    0 3px 0 #1f2937,
-    0 5px 8px rgba(255, 255, 255, 0.18),
-    0 12px 18px rgba(0, 0, 0, 0.55);
+    0 1px 0 #5f6b7a,
+    0 2px 0 #3c4653,
+    0 3px 0 #111827,
+    0 4px 0 #020617,
+    0 5px 10px rgba(255, 255, 255, 0.18),
+    0 16px 22px rgba(0, 0, 0, 0.58);
+}
+
+.floating-piece {
+  position: fixed;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.floating-piece .piece {
+  font-size: inherit;
 }
 
 .square-coordinate {
   position: absolute;
-  left: 6px;
-  bottom: 5px;
+  left: 7px;
+  bottom: 6px;
   z-index: 1;
-  color: rgba(17, 24, 39, 0.5);
+  color: rgba(17, 24, 39, 0.55);
   font-size: clamp(0.55rem, 1.2vw, 0.72rem);
   font-weight: 900;
 }
@@ -410,7 +492,7 @@ body {
 ========================= */
 
 .challenges-section {
-  padding: 34px;
+  padding: 36px;
 }
 
 .section-heading {
@@ -431,11 +513,12 @@ body {
 }
 
 .challenge-status {
-  padding: 15px 18px;
+  padding: 16px 18px;
   margin-bottom: 24px;
   color: #d1d5db;
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
   font-weight: 800;
 }
 
@@ -456,7 +539,7 @@ body {
 }
 
 .challenge-card {
-  padding: 18px;
+  padding: 20px;
 }
 
 .challenge-card h3 {
@@ -484,24 +567,111 @@ body {
   font-size: 0.68rem;
   font-weight: 900;
   text-transform: uppercase;
-  background: rgba(147, 197, 253, 0.1);
-  color: #bfdbfe;
-  border: 1px solid rgba(147, 197, 253, 0.18);
+  background: rgba(214, 182, 107, 0.12);
+  color: #f4d58d;
+  border: 1px solid rgba(214, 182, 107, 0.24);
+  border-radius: 999px;
 }
 
 .challenge-card button {
   width: 100%;
-  border: 1px solid #f3f4f6;
-  background: #f3f4f6;
+  border: 1px solid rgba(244, 213, 141, 0.85);
+  border-radius: 15px;
+  background: linear-gradient(135deg, #f4d58d, #c79a3b);
   color: #111827;
-  padding: 10px;
+  padding: 11px;
   font-weight: 900;
   text-transform: uppercase;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.22s ease;
 }
 
 .challenge-card button:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Modal
+========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.result-modal {
+  width: min(520px, 100%);
+  padding: 30px;
+  background: linear-gradient(145deg, rgba(22, 27, 34, 0.98), rgba(8, 11, 17, 0.98));
+  border: 1px solid rgba(244, 213, 141, 0.28);
+  border-radius: 28px;
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.62);
+}
+
+.modal-label {
+  display: block;
+  color: #d6b66b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.result-modal h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.result-modal p {
+  color: #d1d5db;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-primary,
+.modal-secondary {
+  min-width: 130px;
+  padding: 12px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: 0.22s ease;
+}
+
+.modal-primary {
+  border: 1px solid #f4d58d;
+  background: linear-gradient(135deg, #f4d58d, #c79a3b);
+  color: #111827;
+}
+
+.modal-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.055);
+  color: #f3f4f6;
+}
+
+.modal-primary:hover,
+.modal-secondary:hover {
   transform: translateY(-2px);
 }
 
@@ -523,6 +693,16 @@ body {
   }
 }
 
+@media (max-width: 900px) {
+  .hero-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .game-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 860px) {
   .top-dashboard {
     align-items: flex-start;
@@ -531,10 +711,6 @@ body {
 
   .dashboard-actions {
     justify-content: flex-start;
-  }
-
-  .game-panel {
-    grid-template-columns: 1fr;
   }
 
   .chess-board {
@@ -557,11 +733,7 @@ body {
 
   .dashboard-btn,
   .select-control,
-  .elo-control {
-    width: 100%;
-  }
-
-  .dashboard-btn,
+  .elo-control,
   .select-control select {
     width: 100%;
   }

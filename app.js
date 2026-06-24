@@ -27,6 +27,13 @@ const resultText = document.getElementById("resultText");
 const challengesGrid = document.getElementById("challengesGrid");
 const challengeStatus = document.getElementById("challengeStatus");
 
+const modalOverlay = document.getElementById("modalOverlay");
+const modalLabel = document.getElementById("modalLabel");
+const modalTitle = document.getElementById("modalTitle");
+const modalMessage = document.getElementById("modalMessage");
+const modalRestartBtn = document.getElementById("modalRestartBtn");
+const modalCloseBtn = document.getElementById("modalCloseBtn");
+
 const game = new Chess();
 
 let selectedSquare = null;
@@ -37,8 +44,11 @@ let wrongMoveSquares = [];
 let mode = "human";
 let playerColor = "w";
 let botColor = "b";
+let boardOrientation = "w";
 let botElo = 1200;
+
 let isBotThinking = false;
+let isAnimating = false;
 let gameResultRecorded = false;
 let latestResultMessage = "";
 
@@ -85,18 +95,9 @@ const challenges = [
     title: "Légal Pattern",
     type: "Mate in 3",
     side: "White",
-    fen: "rnbqk1nr/ppp2p1p/3p2p1/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5",
+    fen: "rnbqk1nr/ppp2ppp/3p4/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5",
     description: "A classical queen sacrifice leading to a knight mate.",
     solution: ["f3e5", "g4d1", "c4f7", "e8e7", "c3d5"],
-  },
-  {
-    id: "blackburne-trap",
-    title: "Blackburne Trap",
-    type: "Mate in 4",
-    side: "Black",
-    fen: "r1bqkb1r/pppp1ppp/2n5/4N3/2BnP3/8/PPPP1PPP/RNBQK2R b KQkq - 0 4",
-    description: "A sharp trap with queen activity and a final knight mate.",
-    solution: ["d8g5", "e5f7", "g5g2", "h1f1", "g2e4", "c4e2", "d4f3"],
   },
   {
     id: "extended-fools",
@@ -116,11 +117,16 @@ const challenges = [
     description: "A reversed move-order queen and bishop attack on f7.",
     solution: ["e2e4", "e7e5", "d1h5", "b8c6", "f1c4", "g8f6", "h5f7"],
   },
+  {
+    id: "mirror-fools",
+    title: "Mirror Fool's Net",
+    type: "Mate in 3",
+    side: "Black",
+    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1",
+    description: "A compact forcing sequence against exposed light squares.",
+    solution: ["e7e5", "g2g4", "d8h4", "f2f3", "h4e1"],
+  },
 ];
-
-/* =========================
-   Initialization
-========================= */
 
 createStockfishWorker();
 renderChallenges();
@@ -132,14 +138,24 @@ configureEngine();
    Board Rendering
 ========================= */
 
-function renderBoard() {
+function renderBoard(options = {}) {
+  const hiddenSquare = options.hiddenSquare || null;
+
   boardElement.innerHTML = "";
 
-  for (let rank = 8; rank >= 1; rank--) {
-    for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
-      const file = files[fileIndex];
+  const displayRanks = boardOrientation === "w"
+    ? [8, 7, 6, 5, 4, 3, 2, 1]
+    : [1, 2, 3, 4, 5, 6, 7, 8];
+
+  const displayFiles = boardOrientation === "w"
+    ? files
+    : [...files].reverse();
+
+  displayRanks.forEach((rank) => {
+    displayFiles.forEach((file) => {
       const squareName = `${file}${rank}`;
-      const squareColor = (rank + fileIndex) % 2 === 0 ? "dark" : "light";
+      const realFileIndex = files.indexOf(file);
+      const squareColor = (rank + realFileIndex) % 2 === 0 ? "light" : "dark";
 
       const square = document.createElement("button");
       square.type = "button";
@@ -173,27 +189,49 @@ function renderBoard() {
 
       const piece = game.get(squareName);
 
-      if (piece) {
-        const pieceElement = document.createElement("span");
-        pieceElement.className = `piece ${piece.color === "w" ? "white" : "black"}`;
-        pieceElement.textContent = pieceSymbols[`${piece.color}${piece.type}`];
+      if (piece && hiddenSquare !== squareName) {
+        const pieceElement = createPieceElement(piece.color, piece.type);
         square.appendChild(pieceElement);
       }
 
-      if (file === "a" || rank === 1) {
+      if (shouldShowCoordinate(file, rank)) {
         const coordinate = document.createElement("span");
         coordinate.className = "square-coordinate";
-        coordinate.textContent = file === "a" ? rank : file;
+        coordinate.textContent = getCoordinateLabel(file, rank);
         square.appendChild(coordinate);
       }
 
       square.addEventListener("click", () => handleSquareClick(squareName));
 
       boardElement.appendChild(square);
-    }
-  }
+    });
+  });
 
   updatePanel();
+}
+
+function shouldShowCoordinate(file, rank) {
+  if (boardOrientation === "w") {
+    return file === "a" || rank === 1;
+  }
+
+  return file === "h" || rank === 8;
+}
+
+function getCoordinateLabel(file, rank) {
+  if (boardOrientation === "w") {
+    return file === "a" ? rank : file;
+  }
+
+  return file === "h" ? rank : file;
+}
+
+function createPieceElement(color, type) {
+  const pieceElement = document.createElement("span");
+  pieceElement.className = `piece ${color === "w" ? "white" : "black"}`;
+  pieceElement.textContent = pieceSymbols[`${color}${type}`];
+
+  return pieceElement;
 }
 
 /* =========================
@@ -201,7 +239,7 @@ function renderBoard() {
 ========================= */
 
 function handleSquareClick(squareName) {
-  if (game.isGameOver() || isBotThinking || challengeLocked) return;
+  if (game.isGameOver() || isBotThinking || isAnimating || challengeLocked) return;
 
   if (mode === "bot" && game.turn() === botColor) return;
 
@@ -249,7 +287,7 @@ function clearSelection() {
   legalTargets = [];
 }
 
-function tryMove(from, to) {
+async function tryMove(from, to) {
   const move = game.move({
     from,
     to,
@@ -262,16 +300,80 @@ function tryMove(from, to) {
     return;
   }
 
-  lastMoveSquares = [move.from, move.to];
-  wrongMoveSquares = [];
+  await commitMove(move);
 
-  clearSelection();
-  renderBoard();
   handleGameEnd();
 
   if (mode === "bot" && !game.isGameOver() && game.turn() === botColor) {
     makeBotMove();
   }
+}
+
+async function commitMove(move) {
+  lastMoveSquares = [move.from, move.to];
+  wrongMoveSquares = [];
+  clearSelection();
+
+  await animateMove(move);
+
+  renderBoard();
+}
+
+/* =========================
+   Animation
+========================= */
+
+async function animateMove(move) {
+  const color = move.color;
+  const type = move.promotion || move.piece;
+
+  isAnimating = true;
+
+  renderBoard({ hiddenSquare: move.to });
+
+  const fromSquare = boardElement.querySelector(`[data-square="${move.from}"]`);
+  const toSquare = boardElement.querySelector(`[data-square="${move.to}"]`);
+
+  if (!fromSquare || !toSquare) {
+    isAnimating = false;
+    return;
+  }
+
+  const fromRect = fromSquare.getBoundingClientRect();
+  const toRect = toSquare.getBoundingClientRect();
+
+  const floatingPiece = document.createElement("div");
+  floatingPiece.className = "floating-piece";
+  floatingPiece.style.left = `${fromRect.left}px`;
+  floatingPiece.style.top = `${fromRect.top}px`;
+  floatingPiece.style.width = `${fromRect.width}px`;
+  floatingPiece.style.height = `${fromRect.height}px`;
+  floatingPiece.style.fontSize = `${Math.min(fromRect.width * 0.76, 82)}px`;
+
+  floatingPiece.appendChild(createPieceElement(color, type));
+
+  document.body.appendChild(floatingPiece);
+
+  const dx = toRect.left - fromRect.left;
+  const dy = toRect.top - fromRect.top;
+
+  if (floatingPiece.animate) {
+    await floatingPiece.animate(
+      [
+        { transform: "translate(0, 0) scale(1)" },
+        { transform: `translate(${dx}px, ${dy}px) scale(1.04)` },
+      ],
+      {
+        duration: 240,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      }
+    ).finished;
+  } else {
+    await sleep(240);
+  }
+
+  floatingPiece.remove();
+  isAnimating = false;
 }
 
 /* =========================
@@ -342,7 +444,7 @@ function requestBestMove(fen) {
 
     pendingEngineResolve = resolve;
 
-    const moveTime = Math.round(120 + ((botElo - 200) / 2300) * 1300);
+    const moveTime = Math.round(160 + ((botElo - 200) / 2300) * 1400);
 
     stockfish.postMessage(`position fen ${fen}`);
     stockfish.postMessage(`go movetime ${moveTime}`);
@@ -358,7 +460,7 @@ async function makeBotMove() {
   isBotThinking = true;
   statusText.textContent = "Bot thinking...";
 
-  await sleep(300);
+  await sleep(350);
 
   const bestMove = await requestBestMove(game.fen());
 
@@ -366,10 +468,10 @@ async function makeBotMove() {
     const move = game.move(parseUciMove(bestMove));
 
     if (move) {
-      lastMoveSquares = [move.from, move.to];
+      await commitMove(move);
     }
   } else {
-    makeFallbackMove();
+    await makeFallbackMove();
   }
 
   isBotThinking = false;
@@ -387,7 +489,7 @@ function getFallbackMove() {
   return `${randomMove.from}${randomMove.to}${randomMove.promotion || ""}`;
 }
 
-function makeFallbackMove() {
+async function makeFallbackMove() {
   const fallbackMove = getFallbackMove();
 
   if (!fallbackMove) return;
@@ -395,7 +497,7 @@ function makeFallbackMove() {
   const move = game.move(parseUciMove(fallbackMove));
 
   if (move) {
-    lastMoveSquares = [move.from, move.to];
+    await commitMove(move);
   }
 }
 
@@ -470,6 +572,39 @@ function handleGameEnd() {
   latestResultMessage = buildResultMessage();
   resultText.textContent = latestResultMessage;
   sharePanel.classList.remove("hidden");
+
+  if (game.isCheckmate()) {
+    const winner = game.turn() === "w" ? "Black" : "White";
+
+    if (mode === "bot") {
+      const winnerColor = game.turn() === "w" ? "b" : "w";
+      const playerWon = winnerColor === playerColor;
+
+      showModal({
+        label: playerWon ? "Victory" : "Defeat",
+        title: playerWon ? "You Won" : "You Lost",
+        message: latestResultMessage,
+      });
+
+      return;
+    }
+
+    showModal({
+      label: "Checkmate",
+      title: `${winner} Wins`,
+      message: latestResultMessage,
+    });
+
+    return;
+  }
+
+  if (game.isDraw()) {
+    showModal({
+      label: "Draw",
+      title: "Game Drawn",
+      message: latestResultMessage,
+    });
+  }
 }
 
 function recordBotResult() {
@@ -561,6 +696,7 @@ function loadChallenge(challengeId) {
   clearSelection();
 
   mode = "challenge";
+  boardOrientation = challenge.side === "White" ? "w" : "b";
   setModeButtons();
 
   if (challenge.fen === "start") {
@@ -570,6 +706,7 @@ function loadChallenge(challengeId) {
   }
 
   sharePanel.classList.add("hidden");
+  hideModal();
 
   challengeStatus.className = "challenge-status";
   challengeStatus.textContent = `${challenge.title} loaded. Play as ${challenge.side}. Find the exact line.`;
@@ -577,7 +714,7 @@ function loadChallenge(challengeId) {
   renderBoard();
 }
 
-function tryChallengeMove(from, to) {
+async function tryChallengeMove(from, to) {
   if (!activeChallenge || challengeLocked) return;
 
   const expectedMove = activeChallenge.solution[challengePly];
@@ -596,10 +733,7 @@ function tryChallengeMove(from, to) {
   }
 
   challengePly += 1;
-  lastMoveSquares = [move.from, move.to];
-  wrongMoveSquares = [];
-  clearSelection();
-  renderBoard();
+  await commitMove(move);
 
   if (challengePly >= activeChallenge.solution.length) {
     completeChallenge();
@@ -609,7 +743,7 @@ function tryChallengeMove(from, to) {
   setTimeout(playChallengeReply, 450);
 }
 
-function playChallengeReply() {
+async function playChallengeReply() {
   if (!activeChallenge || challengeLocked) return;
 
   const reply = activeChallenge.solution[challengePly];
@@ -620,10 +754,8 @@ function playChallengeReply() {
 
   if (move) {
     challengePly += 1;
-    lastMoveSquares = [move.from, move.to];
+    await commitMove(move);
   }
-
-  renderBoard();
 
   if (challengePly >= activeChallenge.solution.length) {
     completeChallenge();
@@ -639,6 +771,12 @@ function markWrongChallengeMove(from, to) {
   challengeStatus.textContent = "Wrong move. Reset the challenge and start from zero.";
 
   renderBoard();
+
+  showModal({
+    label: "Challenge Failed",
+    title: "Wrong Move",
+    message: "That move is not part of the solution. Reset the challenge and try again from the beginning.",
+  });
 }
 
 function completeChallenge() {
@@ -648,6 +786,12 @@ function completeChallenge() {
   latestResultMessage = `I solved the "${activeChallenge.title}" chess challenge on Dark Chess Arena.`;
   resultText.textContent = latestResultMessage;
   sharePanel.classList.remove("hidden");
+
+  showModal({
+    label: "Challenge Solved",
+    title: "Excellent Move Sequence",
+    message: latestResultMessage,
+  });
 
   renderBoard();
 }
@@ -712,11 +856,13 @@ function resetGame() {
   sharePanel.classList.add("hidden");
 
   playerColor = playerColorSelect.value;
+  boardOrientation = playerColor;
   botColor = playerColor === "w" ? "b" : "w";
 
   challengeStatus.className = "challenge-status";
   challengeStatus.textContent = "Select a challenge to begin.";
 
+  hideModal();
   configureEngine();
   renderBoard();
 
@@ -725,13 +871,24 @@ function resetGame() {
   }
 }
 
+function resetCurrentContext() {
+  if (mode === "challenge" && activeChallenge) {
+    loadChallenge(activeChallenge.id);
+    return;
+  }
+
+  resetGame();
+}
+
 humanModeBtn.addEventListener("click", () => setMode("human"));
 botModeBtn.addEventListener("click", () => setMode("bot"));
 
 playerColorSelect.addEventListener("change", () => {
-  if (mode === "bot") {
-    resetGame();
-  }
+  playerColor = playerColorSelect.value;
+  boardOrientation = playerColor;
+  botColor = playerColor === "w" ? "b" : "w";
+
+  resetGame();
 });
 
 eloSlider.addEventListener("input", () => {
@@ -741,7 +898,7 @@ eloSlider.addEventListener("input", () => {
   updatePanel();
 });
 
-resetButton.addEventListener("click", resetGame);
+resetButton.addEventListener("click", resetCurrentContext);
 
 challengesGrid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-challenge]");
@@ -749,6 +906,30 @@ challengesGrid.addEventListener("click", (event) => {
   if (!button) return;
 
   loadChallenge(button.dataset.challenge);
+});
+
+/* =========================
+   Modal
+========================= */
+
+function showModal({ label, title, message }) {
+  modalLabel.textContent = label;
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalOverlay.classList.remove("hidden");
+}
+
+function hideModal() {
+  modalOverlay.classList.add("hidden");
+}
+
+modalRestartBtn.addEventListener("click", resetCurrentContext);
+modalCloseBtn.addEventListener("click", hideModal);
+
+modalOverlay.addEventListener("click", (event) => {
+  if (event.target === modalOverlay) {
+    hideModal();
+  }
 });
 
 /* =========================

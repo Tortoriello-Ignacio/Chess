@@ -55,6 +55,18 @@
   </header>
 
   <main class="page-shell">
+    <section class="hero-intro">
+      <div>
+        <span class="eyebrow">Modern Chess Experience</span>
+        <h2>Play, train and solve advanced chess challenges.</h2>
+      </div>
+
+      <p>
+        A dark, elegant chess interface powered by Chess.js and Stockfish.js,
+        with animated moves, bot difficulty control and tactical challenge mode.
+      </p>
+    </section>
+
     <section class="game-section">
       <aside class="game-panel">
         <div class="panel-card">
@@ -143,6 +155,24 @@
       <div id="challengesGrid" class="challenges-grid"></div>
     </section>
   </main>
+
+  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="result-modal">
+      <span id="modalLabel" class="modal-label">Game Alert</span>
+      <h2 id="modalTitle">Game Finished</h2>
+      <p id="modalMessage">The game has ended.</p>
+
+      <div class="modal-actions">
+        <button id="modalRestartBtn" class="modal-primary" type="button">
+          Restart
+        </button>
+
+        <button id="modalCloseBtn" class="modal-secondary" type="button">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
