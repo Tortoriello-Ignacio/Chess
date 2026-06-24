@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Dark Chess | Web Game</title>
-<link rel="icon" type="image/png" href="assets/Chess.jpg" />
+  <title>Dark Chess Arena</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Chess.js from CDN -->
+  <!-- Chess.js CDN -->
   <script type="importmap">
     {
       "imports": {
@@ -19,50 +19,128 @@
 </head>
 
 <body>
-  <main class="app-shell">
-    <section class="game-layout">
+  <header class="top-dashboard">
+    <div class="brand-block">
+      <span class="eyebrow">Interactive Chess Project</span>
+      <h1>Dark Chess Arena</h1>
+    </div>
 
+    <nav class="dashboard-actions" aria-label="Game controls">
+      <button id="humanModeBtn" class="dashboard-btn active" type="button">
+        Human vs Human
+      </button>
+
+      <button id="botModeBtn" class="dashboard-btn" type="button">
+        Play vs Bot
+      </button>
+
+      <label class="select-control">
+        Color
+        <select id="playerColorSelect">
+          <option value="w">White</option>
+          <option value="b">Black</option>
+        </select>
+      </label>
+
+      <label class="elo-control">
+        Bot ELO
+        <span id="eloValue">1200</span>
+        <input id="eloSlider" type="range" min="200" max="2500" step="50" value="1200" />
+      </label>
+
+      <button id="resetButton" class="dashboard-btn reset" type="button">
+        New Game
+      </button>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="game-section">
       <aside class="game-panel">
-        <div class="brand">
-          <span class="eyebrow">Interactive Web Chess</span>
-          <h1>Dark Chess</h1>
-          <p>
-            A minimal and formal chess interface powered by Chess.js.
-          </p>
-        </div>
+        <div class="panel-card">
+          <span class="panel-label">Match Status</span>
 
-        <div class="status-card">
           <div class="status-row">
-            <span>Current Turn</span>
+            <span>Mode</span>
+            <strong id="modeText">Human vs Human</strong>
+          </div>
+
+          <div class="status-row">
+            <span>Turn</span>
             <strong id="turnText">White</strong>
           </div>
 
           <div class="status-row">
-            <span>Game Status</span>
+            <span>Status</span>
             <strong id="statusText">Ready</strong>
           </div>
 
           <div class="status-row">
-            <span>Selected Square</span>
+            <span>Selected</span>
             <strong id="selectedText">None</strong>
+          </div>
+
+          <div class="status-row">
+            <span>Engine</span>
+            <strong id="engineText">Loading</strong>
           </div>
         </div>
 
-        <button id="resetButton" class="reset-button" type="button">
-          Restart Game
-        </button>
+        <div class="panel-card stats-card">
+          <span class="panel-label">Bot Match Record</span>
 
-        <div class="game-note">
-          <p>
-            Click a piece to select it, then click a legal destination square.
-          </p>
+          <div class="stats-grid">
+            <div>
+              <strong id="winsText">0</strong>
+              <span>Wins</span>
+            </div>
+
+            <div>
+              <strong id="drawsText">0</strong>
+              <span>Draws</span>
+            </div>
+
+            <div>
+              <strong id="lossesText">0</strong>
+              <span>Losses</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sharePanel" class="panel-card share-card hidden">
+          <span class="panel-label">Share Result</span>
+          <p id="resultText">Game finished.</p>
+
+          <div class="share-grid">
+            <button type="button" data-share="linkedin">LinkedIn</button>
+            <button type="button" data-share="instagram">Instagram</button>
+            <button type="button" data-share="facebook">Facebook</button>
+            <button type="button" data-share="reddit">Reddit</button>
+            <button type="button" data-share="x">X</button>
+          </div>
         </div>
       </aside>
 
-      <section class="board-section" aria-label="Chess board area">
+      <section class="board-area">
         <div id="chessBoard" class="chess-board" aria-label="Chess board"></div>
       </section>
+    </section>
 
+    <section class="challenges-section">
+      <div class="section-heading">
+        <span class="eyebrow">Training Mode</span>
+        <h2>Advanced Chess Challenges</h2>
+        <p>
+          Load a challenge, find the exact tactical line and complete the sequence.
+          One wrong move marks the attempt with a cross and forces a full reset.
+        </p>
+      </div>
+
+      <div id="challengeStatus" class="challenge-status">
+        Select a challenge to begin.
+      </div>
+
+      <div id="challengesGrid" class="challenges-grid"></div>
     </section>
   </main>
 
